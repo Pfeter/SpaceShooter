@@ -1,7 +1,6 @@
 import sys, random, pygame
 from pygame.locals import *
-from spaceship import SpaceShip
-from background2 import Background
+from spaceship import Spaceship, Projectile
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
@@ -23,7 +22,9 @@ class Screen(object):
         self.font = pygame.font.SysFont('mono', 20, bold=True)
 
         self.stars = self.generate_stars()
-        self.spaceship = SpaceShip()
+        self.spaceship = Spaceship()
+
+        self.projectiles = []
 
         self.main()
 
@@ -40,11 +41,14 @@ class Screen(object):
 
     def exit(self):
         pygame.quit()
-        sys.exit(2)
+        sys.exit()
 
     def fps_and_playtime_caption(self):
         text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
         pygame.display.set_caption(text)
+
+    def shoot(self):
+        self.projectiles.append(Projectile(self.spaceship.x, self.spaceship.y))
 
     def main(self):
         direction = [False, False, False, False]
@@ -54,9 +58,6 @@ class Screen(object):
 
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    self.running = False
-                    self.exit()
-                elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     self.running = False
                     self.exit()
 
@@ -69,6 +70,8 @@ class Screen(object):
                         direction[2] = True
                     if event.key == K_LEFT:
                         direction[3] = True
+                    if event.key == K_SPACE:
+                        self.shoot()
                 elif event.type == KEYUP:
                     direction[0] = False
                     direction[1] = False
@@ -82,6 +85,8 @@ class Screen(object):
             self.draw_stars()
             self.screen.blit(self.background, (0, 0))
             self.spaceship.draw(self.screen)
+            for i in self.projectiles:
+                i.draw(self.screen)
             pygame.display.update()
 
 if __name__ == '__main__':

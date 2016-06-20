@@ -1,2 +1,12 @@
-### Week 7-8 - Space Shooter
-Make a space shooter game.
+# Space Shooter
+*Make a space shooter game.*
+
+___
+
+##REVIEW NEEDED
+
+*simple space background, with adjustable star number, fps and window sizes*
+* background.py
+  * Screen class
+
+___

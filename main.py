@@ -1,14 +1,14 @@
-import sys, pygame
+import sys, random, pygame
 from pygame.locals import *
 from spaceship import SpaceShip
-# from background import Background
+from background2 import Background
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
         self.running = True
         self.fps = fps
         self.playtime = 0.0
-        # self.total_stars = stars
+        self.total_stars = stars
 
         pygame.init()
         pygame.display.set_caption("Press ESC to quit")
@@ -22,10 +22,21 @@ class Screen(object):
 
         self.font = pygame.font.SysFont('mono', 20, bold=True)
 
-        # self.stars = Background.generate_stars(self.background, self.stars)
+        self.stars = self.generate_stars()
         self.spaceship = SpaceShip()
 
         self.main()
+
+    def generate_stars(self):
+        return [[random.randint(0, self.width), random.randint(0, self.height)] for i in range(self.total_stars)]
+
+    def draw_stars(self):
+        for star in self.stars:
+            pygame.draw.line(self.background, (255, 255, 255), (star[0], star[1]), (star[0], star[1]))
+            star[0] = star[0] - 1
+            if star[0] < 0:
+                star[0] = self.width
+                star[1] = random.randint(0, self.height)
 
     def exit(self):
         pygame.quit()
@@ -68,7 +79,7 @@ class Screen(object):
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))
-            # self.draw_stars()
+            self.draw_stars()
             self.screen.blit(self.background, (0, 0))
             self.spaceship.draw(self.screen)
             pygame.display.update()

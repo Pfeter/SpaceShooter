@@ -38,6 +38,7 @@ class Projectile(object):
     def explode(self):
         self.image = pygame.image.load("images/exploded.png")
 
+
 class Bomb(Projectile):
     def __init__(self, x, y):
         Projectile.__init__(self, x, y)

@@ -9,7 +9,7 @@ class Asteroid(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.image.load('assets/mid_1.png').convert()
+        self.image = pygame.image.load('images/mid_1.png').convert()
         self.rect = self.image.get_rect()
         self.image.set_colorkey(BLACK)
 
@@ -34,7 +34,7 @@ done = False
 
 clock = pygame.time.Clock()
 
-background_image = pygame.image.load('assets/bg_blue.png').convert()
+background_image = pygame.image.load('images/bg_blue.png').convert()
 
 asteroid_list = pygame.sprite.Group()
 

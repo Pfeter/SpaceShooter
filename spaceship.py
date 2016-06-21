@@ -31,7 +31,35 @@ class Projectile(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.image = pygame.image.load("images/bomb.png")
 
     def draw(self, screen):
         screen.blit(self.image, [self.x, self.y])
+
+    def explode(self):
+        self.image = pygame.image.load("images/exploded.png")
+
+class Bomb(Projectile):
+    def __init__(self, x, y):
+        Projectile.__init__(self, x, y)
+        self.image = pygame.image.load("images/bomb.png")
+        self.timer = 100
+
+    def update(self):
+        if self.timer <= 0:
+            self.explode()
+        else:
+            self.timer -= 1
+
+class Bullet(Projectile):
+    def __init__(self, x, y):
+        Projectile.__init__(self, x, y)
+        self.image = pygame.image.load("images/bullet.png")
+
+    def update(self):
+        self.x += 2
+
+# class Laser(Projectile):
+#     def __init__(self):
+#         pass
+#     def update(self):
+#         pass

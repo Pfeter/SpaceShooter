@@ -1,6 +1,7 @@
 import sys, random, pygame
 from pygame.locals import *
-from spaceship import Spaceship, Projectile
+from spaceship import *
+# from background2 import Background
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
@@ -47,9 +48,6 @@ class Screen(object):
         text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
         pygame.display.set_caption(text)
 
-    def shoot(self):
-        self.projectiles.append(Projectile(self.spaceship.x, self.spaceship.y))
-
     def main(self):
         direction = [False, False, False, False]
         while self.running:
@@ -57,36 +55,50 @@ class Screen(object):
             self.playtime += milliseconds / 1000.0
 
             for event in pygame.event.get():
+                press = pygame.key.get_pressed()
                 if event.type == QUIT:
                     self.running = False
                     self.exit()
 
-                if event.type == KEYDOWN:
-                    if event.key == K_UP:
-                        direction[0] = True
-                    if event.key == K_DOWN:
-                        direction[1] = True
-                    if event.key == K_RIGHT:
-                        direction[2] = True
-                    if event.key == K_LEFT:
-                        direction[3] = True
-                    if event.key == K_SPACE:
-                        self.shoot()
-                elif event.type == KEYUP:
-                    direction[0] = False
-                    direction[1] = False
-                    direction[2] = False
-                    direction[3] = False
+                elif press[pygame.K_ESCAPE]:
+                    self.running = False
+                    self.exit()
 
-            self.spaceship.move(direction)
+                if press[pygame.K_UP]:
+                    direction[0] = True
+                else:
+                    direction[0] = False
+                if press[pygame.K_DOWN]:
+                    direction[1] = True
+                else:
+                    direction[1] = False
+                if press[pygame.K_RIGHT]:
+                    direction[2] = True
+                else:
+                    direction[2] = False
+                if press[pygame.K_LEFT]:
+                    direction[3] = True
+                else:
+                    direction[3] = False
+                if press[pygame.K_SPACE]:
+                    self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
+                if press[pygame.K_a]:
+                    self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
+                # if event.key == K_S:
+                #     self.projectiles.append(Laser(self.spaceship.x, self.spaceship.y))
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))
             self.draw_stars()
             self.screen.blit(self.background, (0, 0))
+
+            self.spaceship.move(direction)
             self.spaceship.draw(self.screen)
-            for i in self.projectiles:
-                i.draw(self.screen)
+
+            for projectile in self.projectiles:
+                projectile.update()
+                projectile.draw(self.screen)
+
             pygame.display.update()
 
 if __name__ == '__main__':

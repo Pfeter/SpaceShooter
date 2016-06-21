@@ -1,4 +1,4 @@
-import pygame
+import sys, pygame
 
 class Spaceship(object):
     def __init__(self):
@@ -38,7 +38,6 @@ class Projectile(object):
     def explode(self):
         self.image = pygame.image.load("images/exploded.png")
 
-
 class Bomb(Projectile):
     def __init__(self, x, y):
         Projectile.__init__(self, x, y)
@@ -55,6 +54,7 @@ class Bullet(Projectile):
     def __init__(self, x, y):
         Projectile.__init__(self, x, y)
         self.image = pygame.image.load("images/bullet.png")
+
 
     def update(self):
         self.x += 2

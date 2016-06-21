@@ -59,8 +59,12 @@ class Bullet(Projectile):
     def update(self):
         self.x += 2
 
-# class Laser(Projectile):
-#     def __init__(self):
-#         pass
-#     def update(self):
-#         pass
+class Laser(object):
+    def __init__(self, x, y, end_x):
+        self.x = x
+        self.y = y
+        self.end_x = end_x
+        self.end_y = y
+
+    def draw(self, screen):
+        pygame.draw.line(screen, (255, 255, 255), (self.x, self.y), (self.end_x, self.end_y))

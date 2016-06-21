@@ -1,6 +1,6 @@
 import sys, random, pygame
 from pygame.locals import QUIT
-from spaceship import Spaceship, Bomb, Bullet
+from spaceship import Spaceship, Bomb, Bullet, Laser
 from background2 import Background
 
 class Screen(object):
@@ -26,6 +26,7 @@ class Screen(object):
         self.spaceship = Spaceship()
 
         self.projectiles = []
+        self.lasers = []
 
         self.main()
 
@@ -79,8 +80,8 @@ class Screen(object):
                     last_bullet_ticks = 0
                 if press[pygame.K_a]:
                     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-                # if event.key == K_S:
-                #     self.projectiles.append(Laser(self.spaceship.x, self.spaceship.y))
+                if press[pygame.K_s]:
+                    self.lasers.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))
@@ -98,7 +99,8 @@ class Screen(object):
             for projectile in self.projectiles:
                 projectile.update()
                 projectile.draw(self.screen)
-
+            for laser in self.lasers:
+                laser.draw(self.screen)
             pygame.display.update()
 
 if __name__ == '__main__':

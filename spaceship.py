@@ -1,4 +1,4 @@
-import sys, pygame
+import pygame
 
 class Spaceship(object):
     def __init__(self):
@@ -27,9 +27,8 @@ class Spaceship(object):
         if direction == [False, False, False, False]:
             self.image = self.spaceship_image_normal
 
-class Projectile(pygame.sprite.Sprite):
+class Projectile(object):
     def __init__(self, x, y):
-        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
 

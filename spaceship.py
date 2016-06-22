@@ -13,6 +13,20 @@ class Spaceship(object):
     def draw(self, screen):
         screen.blit(self.image, [self.x, self.y])
 
+    def move(self, direction):
+        if direction[0]:
+            self.image = self.spaceship_image_up
+            self.y -= 1
+        if direction[1]:
+            self.image = self.spaceship_image_down
+            self.y += 1
+        if direction[2]:
+            self.x += 1
+        if direction[3]:
+            self.x -= 1
+        if direction == [False, False, False, False]:
+            self.image = self.spaceship_image_normal
+
     def move_route(self, press):
         if press[pygame.K_ESCAPE]:
             return False
@@ -71,8 +85,7 @@ class Bullet(Projectile):
         Projectile.__init__(self, x, y)
         self.image = pygame.image.load("images/bullet.png")
 
-
-    def update(self, y, x):
+    def update(self):
         self.x += 2
 
 class Laser(object):

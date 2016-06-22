@@ -1,7 +1,7 @@
 import sys, random, pygame
-from pygame.locals import *
-from spaceship import *
-from background2 import *
+from pygame.locals import QUIT
+from spaceship import Spaceship, Bomb, Bullet, Laser
+from background2 import Background
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
@@ -26,6 +26,7 @@ class Screen(object):
         self.spaceship = Spaceship()
 
         self.projectiles = []
+        self.lasers = []
 
         self.main()
 
@@ -39,6 +40,9 @@ class Screen(object):
 
     def main(self):
         direction = [False, False, False, False]
+        bullet_fire = False
+        rate_of_fire = 10
+        last_bullet_ticks = 0
         while self.running:
             milliseconds = self.clock.tick(self.fps)
             self.playtime += milliseconds / 1000.0
@@ -70,24 +74,33 @@ class Screen(object):
                 else:
                     direction[3] = False
                 if press[pygame.K_SPACE]:
-                    self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
+                    bullet_fire = True
+                else:
+                    bullet_fire = False
+                    last_bullet_ticks = 0
                 if press[pygame.K_a]:
                     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-                # if event.key == K_S:
-                #     self.projectiles.append(Laser(self.spaceship.x, self.spaceship.y))
+                if press[pygame.K_s]:
+                    self.lasers.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))
             Background.draw_stars(self, self.stars, self.background, self.width, self.height)
             self.screen.blit(self.background, (0, 0))
-
             self.spaceship.move(direction)
             self.spaceship.draw(self.screen)
 
+            if bullet_fire:
+                if last_bullet_ticks >= rate_of_fire:
+                    self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
+                    last_bullet_ticks = 0
+                else:
+                    last_bullet_ticks += 1
             for projectile in self.projectiles:
                 projectile.update()
                 projectile.draw(self.screen)
-
+            for laser in self.lasers:
+                laser.draw(self.screen)
             pygame.display.update()
 
 if __name__ == '__main__':

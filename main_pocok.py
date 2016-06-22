@@ -1,34 +1,30 @@
 import sys, random, pygame
 from pygame.locals import *
-from spaceship import *
+from spaceship import Spaceship, Bomb, Laser, Bullet
 from stars import Stars, Asteroid
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
         self.running = True
-        self.fps = fps
-        self.playtime = 0.0
-        self.total_stars = stars
+        self.score = 0
 
-        pygame.init()
-        pygame.display.set_caption("Press ESC to quit")
+        # CONSTANT
+        self.FPS = fps
+        self.PLAYTIME = 0.0
+        self.TOTAL_STARS = stars
+        self.WIDTH = width
+        self.HEIGHT = height
 
-        self.width = width
-        self.height = height
-
-        self.screen = pygame.display.set_mode((self.width, self.height), pygame.DOUBLEBUF)
-        self.background = pygame.Surface(self.screen.get_size()).convert()
+        # INITIALIZE SCREEN, CLOCK, FONT
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT), pygame.DOUBLEBUF)
+        self.background = pygame.Surface(self.screen.get_size()).convert(self.screen)
         self.clock = pygame.time.Clock()
-
         self.font = pygame.font.SysFont('mono', 20, bold=True)
 
-        self.stars = Stars(self.background, self.width, self.height, self.total_stars)
-        self.asteroids = Asteroid()
-        self.asteroid_list = self.asteroids.generate_asteroids(12, 15)
-
+        # INITIALIZE SCREEN OBJECTS
+        self.stars = Stars(self.background, self.WIDTH, self.HEIGHT, self.TOTAL_STARS)
+        self.asteroid = Asteroid()
         self.spaceship = Spaceship()
-
-        self.projectiles = []
 
         self.main()
 
@@ -37,73 +33,58 @@ class Screen(object):
         sys.exit()
 
     def fps_and_playtime_caption(self):
-        text = "FPS: {0:.2f}   Playtime: {1:.2f}".format(self.clock.get_fps(), self.playtime)
+        text = "FPS: {0:.2f}   Playtime: {1:.2f}   SCORE: {}".format(self.clock.get_fps(), self.PLAYTIME, self.score)
         pygame.display.set_caption(text)
 
-    def asteroid_positions(self):
-        return [(aster.rect.x, aster.rect.y) for aster in self.asteroids.asteroid_list]
+    def is_valid_move(self):
+        return self.spaceship.x in range(0, self.WIDTH) and self.spaceship.y in range(0, self.HEIGHT)
 
     def main(self):
-        direction = [False, False, False, False]
         while self.running:
-            milliseconds = self.clock.tick(self.fps)
-            self.playtime += milliseconds / 1000.0
 
+            # PLAYTIME
+            milliseconds = self.clock.tick(self.FPS)
+            self.PLAYTIME += milliseconds / 1000.0
+
+            # MOVEMENT
             for event in pygame.event.get():
-                press = pygame.key.get_pressed()
-                if event.type == QUIT:
-                    self.running = False
-                    self.exit()
+                self.spaceship.move_route(pygame.key.get_pressed())
 
-                elif press[pygame.K_ESCAPE]:
-                    self.running = False
-                    self.exit()
+            # DRAW SPACESHIP
+            if self.is_valid_move:
+                self.spaceship.draw(self.screen)
 
-                if press[pygame.K_UP]:
-                    direction[0] = True
-                else:
-                    direction[0] = False
-                if press[pygame.K_DOWN]:
-                    direction[1] = True
-                else:
-                    direction[1] = False
-                if press[pygame.K_RIGHT]:
-                    direction[2] = True
-                else:
-                    direction[2] = False
-                if press[pygame.K_LEFT]:
-                    direction[3] = True
-                else:
-                    direction[3] = False
-                if press[pygame.K_SPACE]:
-                    self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
-                # if press[pygame.K_a]:
-                #     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-                # if event.key == K_S:
-                #     self.projectiles.append(Laser(self.spaceship.x, self.spaceship.y))
-
-            self.fps_and_playtime_caption()
+            # INITIALIZE BACKGROUND, DRAW STARS
             self.background.fill((0, 0, 0))
             for star in self.stars.positions:
                 self.stars.draw(star)
 
-            self.screen.blit(self.background, (0, 0))
-            self.asteroids.asteroid_list.draw(self.screen)
-            for aster in self.asteroids.asteroid_list:
-                aster.update()
-            all_asteroid_pos = self.asteroid_positions()
-            self.spaceship.move(direction)
-            self.spaceship.draw(self.screen)
+            # UPDATE CAPTION
+            self.fps_and_playtime_caption()
 
-            for projectile in self.projectiles:
-                if projectile.x > 800 :
-                    self.projectiles.remove(projectile)
-                projectile.update()
-                if (projectile.x, projectile.y) in all_asteroid_pos:
-                    print("hey")
-                projectile.draw(self.screen)
+            # MAKE SCREEN
+            self.screen.blit(self.background, (0, 0))
+
+            # DRAW ASTEROIDS, PROJECTILES
+            self.asteroid.asteroid_list.draw(self.screen)
+            for comet in self.asteroid.asteroid_list:
+                comet.update()
+
+            self.projectile.projectile_list.draw(self.screen)
+            for ammo in self.projectile.projectile_list:
+                ammo.update()
+                # COLLIDE CHECK
+                asteroid_hit_list = pygame.sprite.spritecollide(ammo, self.asteroid.asteroid_list, True)
+                self.score = len(asteroid_hit_list)
+
 
             pygame.display.update()
 
 if __name__ == '__main__':
-  Screen(width=800, height=800, stars=600, fps=100)
+    pygame.init()
+    pygame.display.set_caption("Press ESC to quit")
+    if not pygame.font:
+        print("Warning, fonts disabled")
+    if not pygame.mixer:
+        print("Warning, sound disabled")
+    Screen(width=800, height=800, stars=600, fps=100)

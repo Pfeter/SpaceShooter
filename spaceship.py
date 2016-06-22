@@ -56,7 +56,7 @@ class Bullet(Projectile):
         self.image = pygame.image.load("images/bullet.png")
 
 
-    def update(self):
+    def update(self, y, x):
         self.x += 2
 
 class Laser(object):
@@ -68,3 +68,9 @@ class Laser(object):
 
     def draw(self, screen):
         pygame.draw.line(screen, (255, 255, 255), (self.x, self.y), (self.end_x, self.end_y))
+
+    def update(self, ship_x, ship_y):
+        self.x = ship_x
+        self.y = ship_y
+        self.end_x = ship_x + 800
+        self.end_y = ship_y

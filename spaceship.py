@@ -27,8 +27,9 @@ class Spaceship(object):
         if direction == [False, False, False, False]:
             self.image = self.spaceship_image_normal
 
-class Projectile(object):
+class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
 

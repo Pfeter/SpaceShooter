@@ -106,4 +106,4 @@ class Screen(object):
             pygame.display.update()
 
 if __name__ == '__main__':
-	Screen(width=800, height=800, stars=600, fps=100)
+  Screen(width=800, height=800, stars=600, fps=100)

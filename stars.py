@@ -22,6 +22,7 @@ class Stars():
             star[0] = self.width
             star[1] = random.randint(0, self.height)
 
+
 class Asteroid(pygame.sprite.Sprite):
 
     def __init__(self):

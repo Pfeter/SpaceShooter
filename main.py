@@ -43,7 +43,7 @@ class Screen(object):
         direction = [False, False, False, False]
         bullet_fire = False
         rate_of_fire = 10
-        last_bullet_ticks = 0
+        last_bullet_ticks = rate_of_fire
         while self.running:
             milliseconds = self.clock.tick(self.fps)
             self.playtime += milliseconds / 1000.0
@@ -57,17 +57,7 @@ class Screen(object):
                     self.running = False
                     self.exit()
 
-                keyboard_event_controller(pygame.key.get_pressed(), direction)
-
-                # if press[pygame.K_SPACE]:
-                #     bullet_fire = True
-                # else:
-                #     bullet_fire = False
-                #     last_bullet_ticks = 0
-                # if press[pygame.K_a]:
-                #     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-                # if press[pygame.K_s]:
-                #     self.lasers.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
+                keyboard_event_controller(pygame.key.get_pressed(), direction, bullet_fire, last_bullet_ticks)
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))

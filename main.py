@@ -1,7 +1,8 @@
 import sys, random, pygame
-from pygame.locals import QUIT
+from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
 from spaceship import Spaceship, Bomb, Bullet, Laser
 from background2 import Background
+from keyboard_event_controller import keyboard_event_controller
 
 class Screen(object):
     def __init__(self, width=640, height=400, fps=60, stars=200):
@@ -48,40 +49,25 @@ class Screen(object):
             self.playtime += milliseconds / 1000.0
 
             for event in pygame.event.get():
-                press = pygame.key.get_pressed()
                 if event.type == QUIT:
                     self.running = False
                     self.exit()
 
-                elif press[pygame.K_ESCAPE]:
+                elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     self.running = False
                     self.exit()
 
-                if press[pygame.K_UP]:
-                    direction[0] = True
-                else:
-                    direction[0] = False
-                if press[pygame.K_DOWN]:
-                    direction[1] = True
-                else:
-                    direction[1] = False
-                if press[pygame.K_RIGHT]:
-                    direction[2] = True
-                else:
-                    direction[2] = False
-                if press[pygame.K_LEFT]:
-                    direction[3] = True
-                else:
-                    direction[3] = False
-                if press[pygame.K_SPACE]:
-                    bullet_fire = True
-                else:
-                    bullet_fire = False
-                    last_bullet_ticks = 0
-                if press[pygame.K_a]:
-                    self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-                if press[pygame.K_s]:
-                    self.lasers.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
+                keyboard_event_controller(pygame.key.get_pressed(), direction)
+
+                # if press[pygame.K_SPACE]:
+                #     bullet_fire = True
+                # else:
+                #     bullet_fire = False
+                #     last_bullet_ticks = 0
+                # if press[pygame.K_a]:
+                #     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
+                # if press[pygame.K_s]:
+                #     self.lasers.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))

@@ -41,8 +41,6 @@ class Screen(object):
 
     def main(self):
         keyboard_events = [False, False, False, False, False]
-        rate_of_fire = 10
-        last_bullet_ticks = rate_of_fire
         while self.running:
             milliseconds = self.clock.tick(self.fps)
             self.playtime += milliseconds / 1000.0
@@ -64,18 +62,14 @@ class Screen(object):
             self.screen.blit(self.background, (0, 0))
             self.spaceship.move(keyboard_events)
             self.spaceship.draw(self.screen)
+            self.spaceship.shoot(keyboard_events, self.projectiles)
 
-            if keyboard_events[4]:
-                if last_bullet_ticks >= rate_of_fire:
-                    self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
-                    last_bullet_ticks = 0
-                else:
-                    last_bullet_ticks += 1
             for projectile in self.projectiles:
                 projectile.update()
                 projectile.draw(self.screen)
             for laser in self.lasers:
                 laser.draw(self.screen)
+
             pygame.display.update()
 
 if __name__ == '__main__':

@@ -1,5 +1,4 @@
 import pygame
-from pygame.locals import *
 
 def keyboard_event_controller(press, keyboard_events):
     if press[pygame.K_UP]:

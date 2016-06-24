@@ -9,6 +9,8 @@ class Spaceship(object):
         self.spaceship_image_normal = pygame.transform.rotate(pygame.image.load("images/spaceship_top.png"), self.direction_angle)
         self.spaceship_image_down = pygame.transform.rotate(pygame.image.load("images/spaceship_down_full.png"), self.direction_angle)
         self.image = self.spaceship_image_normal
+        self.rate_of_fire = 10
+        self.last_bullet_ticks = self.rate_of_fire
 
     def draw(self, screen):
         screen.blit(self.image, [self.x, self.y])
@@ -27,35 +29,13 @@ class Spaceship(object):
         if direction == [False, False, False, False]:
             self.image = self.spaceship_image_normal
 
-    def move_route(self, press):
-        if press[pygame.K_ESCAPE]:
-            return False
-
-        if press[pygame.K_UP]:
-            self.image = self.spaceship_image_up
-            self.y -= 1
-        else:
-            self.image = self.spaceship_image_normal
-        if press[pygame.K_DOWN]:
-            self.image = self.spaceship_image_down
-            self.y += 1
-        else:
-            self.image = self.spaceship_image_normal
-        if press[pygame.K_RIGHT]:
-            self.x += 1
-        else:
-            self.image = self.spaceship_image_normal
-        if press[pygame.K_LEFT]:
-            self.x -= 1
-        else:
-            self.image = self.spaceship_image_normal
-
-        # if press[pygame.K_SPACE]:
-        #     self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
-        # if press[pygame.K_a]:
-        #     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
-        # if press[pygame.K_s]:
-        #     self.projectiles.append(Laser(self.spaceship.x, self.spaceship.y, self.width))
+    def shoot(self, keyboard_events, projectiles):
+        if keyboard_events[4]:
+            if self.last_bullet_ticks >= self.rate_of_fire:
+                projectiles.append(Bullet(self.x, self.y))
+                self.last_bullet_ticks = 0
+            else:
+                self.last_bullet_ticks += 1
 
 class Projectile(object):
     def __init__(self, x, y):

@@ -1,31 +1,32 @@
 import pygame
 from pygame.locals import *
 
-def keyboard_event_controller(press, direction, bullet_fire, last_bullet_ticks):
-    keyboard_events = [direction, bullet_fire, last_bullet_ticks]
-
+def keyboard_event_controller(press, keyboard_events):
     if press[pygame.K_UP]:
-        keyboard_events[0][0] = True
+        keyboard_events[0] = True
     else:
-        keyboard_events[0][0] = False
-    if press[pygame.K_DOWN]:
-        keyboard_events[0][1] = True
-    else:
-        keyboard_events[0][1] = False
-    if press[pygame.K_RIGHT]:
-        keyboard_events[0][2] = True
-    else:
-        keyboard_events[0][2] = False
-    if press[pygame.K_LEFT]:
-        keyboard_events[0][3] = True
-    else:
-        keyboard_events[0][3] = False
+        keyboard_events[0] = False
 
-    # if press[pygame.K_SPACE]:
-    #     keyboard_events[1] = True
-    # else:
-    #     keyboard_events[1] = False
-    #     keyboard_events[2] = 0
+    if press[pygame.K_DOWN]:
+        keyboard_events[1] = True
+    else:
+        keyboard_events[1] = False
+
+    if press[pygame.K_RIGHT]:
+        keyboard_events[2] = True
+    else:
+        keyboard_events[2] = False
+
+    if press[pygame.K_LEFT]:
+        keyboard_events[3] = True
+    else:
+        keyboard_events[3] = False
+
+    if press[pygame.K_SPACE]:
+        keyboard_events[4] = True
+    else:
+        keyboard_events[4] = False
+
     # if press[pygame.K_a]:
     #     self.projectiles.append(Bomb(self.spaceship.x, self.spaceship.y))
     # if press[pygame.K_s]:

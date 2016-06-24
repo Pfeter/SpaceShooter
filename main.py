@@ -40,8 +40,7 @@ class Screen(object):
         pygame.display.set_caption(text)
 
     def main(self):
-        direction = [False, False, False, False]
-        bullet_fire = False
+        keyboard_events = [False, False, False, False, False]
         rate_of_fire = 10
         last_bullet_ticks = rate_of_fire
         while self.running:
@@ -57,16 +56,16 @@ class Screen(object):
                     self.running = False
                     self.exit()
 
-                keyboard_event_controller(pygame.key.get_pressed(), direction, bullet_fire, last_bullet_ticks)
+                keyboard_event_controller(pygame.key.get_pressed(), keyboard_events)
 
             self.fps_and_playtime_caption()
             self.background.fill((0, 0, 0))
             Background.draw_stars(self, self.stars, self.background, self.width, self.height)
             self.screen.blit(self.background, (0, 0))
-            self.spaceship.move(direction)
+            self.spaceship.move(keyboard_events)
             self.spaceship.draw(self.screen)
 
-            if bullet_fire:
+            if keyboard_events[4]:
                 if last_bullet_ticks >= rate_of_fire:
                     self.projectiles.append(Bullet(self.spaceship.x, self.spaceship.y))
                     last_bullet_ticks = 0

@@ -2,7 +2,7 @@ import pygame
 import random
 
 from player import Spaceship, Bullet
-from asteroid import Asteroid
+from asteroid import SmallAsteroid, BigAsteroid, MediumAsteroid
 from menu import Menu
 
 BLACK = (  0,   0,   0)
@@ -23,13 +23,16 @@ class Main(object):
 		self.FPS = fps
 		self.TOTAL_STARS = random.randint(200, 250)
 
+
 		self.playtime = 0
 
-		# SET UP GUI, CLOCK AND FONT
+		# SET UP GUI, SOUND, CLOCK AND FONT
 		self.screen = pygame.display.set_mode([self.SCREEN_HEIGHT, self.SCREEN_WIDTH], pygame.HWSURFACE | pygame.DOUBLEBUF) # double buffering, framerate buff
 		self.background = pygame.Surface(self.screen.get_size()).convert()
 		self.clock = pygame.time.Clock()
 		self.font = pygame.font.SysFont('mono', 100, bold=True)
+		pygame.mixer.music.load("sound/music.mp3")
+		pygame.mixer.music.play()
 
 		# INIT PLAYER
 		self.player = Spaceship(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)
@@ -55,7 +58,11 @@ class Main(object):
 				star[1] = random.randint(0, self.SCREEN_HEIGHT)
 
 	def generate_asteroids(self):
-		[self.asteroids.add(Asteroid(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)) for i in range(random.randrange(15, 25))]
+		asteroid_types = [SmallAsteroid(self.SCREEN_WIDTH, self.SCREEN_HEIGHT),
+		                  BigAsteroid(self.SCREEN_WIDTH, self.SCREEN_HEIGHT),
+		                  MediumAsteroid(self.SCREEN_WIDTH, self.SCREEN_HEIGHT)]
+
+		[self.asteroids.add(random.choice(asteroid_types)) for i in range(random.randrange(15, 25))]
 
 	def fps_and_playtime_caption(self):
 		text = "SCORE: {0:} Playtime: {1:.2f} seconds".format(self.player.score, self.playtime)
@@ -68,15 +75,25 @@ class Main(object):
 		self.screen.blit(rendered, (250, 300))
 		pygame.display.update()
 
+	# def score_display(self, scorable):
+	# 	display_start = self.playtime
+	# 	while display_start + 5 > self.playtime:
+	# 		sys_font = pygame.font.SysFont("mono", 12, bold=True)
+	# 		rendered = sys_font.render(str(scorable.value), 0, (WHITE))
+	# 		self.screen.blit(rendered, (scorable.rect.x, scorable.rect.y))
+
 	def game_over(self):
 		exit_event = True
 		while exit_event:
-			events = list(pygame.event.get())
-			quit_events = [event for event in events if event.type == pygame.QUIT or event.key == pygame.K_ESCAPE]
+			try:
+				events = list(pygame.event.get())
+				quit_events = [event for event in events if event.type == pygame.QUIT or event.key == pygame.K_ESCAPE]
+			except AttributeError:
+				continue
 			if quit_events:
 				break
 			self.message_display('GAME OVER')
-		pygame.display.quit()
+		return
 
 
 	def game(self):
@@ -95,10 +112,13 @@ class Main(object):
 			self.playtime += milliseconds / 1000.0
 
 			# EVENTS, KEYS
-			events = list(pygame.event.get())
-			keys = pygame.key.get_pressed()
-			quit_events = [event for event in events if event.type == pygame.QUIT or event.key == pygame.K_ESCAPE]
-			keyup_events = [event for event in events if event.type == pygame.KEYUP and event.key in available_keyboard_events]
+			try:
+				events = list(pygame.event.get())
+				keys = pygame.key.get_pressed()
+				quit_events = [event for event in events if event.type == pygame.QUIT or event.key == pygame.K_ESCAPE]
+				keyup_events = [event for event in events if event.type == pygame.KEYUP and event.key in available_keyboard_events]
+			except AttributeError:
+				continue
 			if quit_events:
 				pygame.quit()
 
@@ -121,15 +141,19 @@ class Main(object):
 			# KEYBOARD EVENTS
 			if [e for e in keyup_events if available_keyboard_events[e.key] == self.player.direction]:  # STOP SHIP IF KEY RELEASED
 				self.player.direction = None
-			if pygame.sprite.groupcollide(self.player_sprite, self.asteroids, True, True): # CHECKING ASTEROID COLLISION
+			if pygame.sprite.groupcollide(self.player_sprite, self.asteroids, True, True):  # CHECKING ASTEROID COLLISION
 				self.game_running = False
 				self.game_over()  # DRAW EXIT SCREEN, THAN BREAK INTO MENU
 
 			#BULLET - ASTEROID COLLISION DETECT
 			if [e for e in keyup_events if available_keyboard_events[e.key] == 'bullet']:
 				self.player.projectiles.add(Bullet(self.player.rect.x, self.player.rect.y))
+			score = sum([asteroid.value for asteroid in pygame.sprite.groupcollide(self.asteroids, self.player.projectiles, False, False)])
+			# [self.score_display(asteroid) for asteroid in pygame.sprite.groupcollide(self.asteroids, self.player.projectiles, False, False)]
 			if pygame.sprite.groupcollide(self.asteroids, self.player.projectiles, True, True):
-				self.player.score += 1
+
+				self.player.score += score
+
 			self.player.projectiles.draw(self.screen)
 
 
@@ -143,11 +167,12 @@ if __name__ == '__main__':
 	pygame.init()
 	pygame.display.set_caption("Press ESC to quit")
 
-	pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
-	pygame.mixer.music.load("sound/music.mp3")
-	pygame.mixer.music.play()
+
 
 	def menu_loop():
+		pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=4096)
+		pygame.mixer.music.load("sound/hearthbeat.wav")
+		pygame.mixer.music.play()
 		menu_screen = pygame.display.set_mode((854, 480))
 		menu_screen.fill((51, 51, 51))
 		menu = Menu(['Start', 'Options', 'Quit'], menu_screen)
@@ -167,9 +192,7 @@ if __name__ == '__main__':
 							pygame.quit()
 							sys.exit()
 						elif menu.get_position() == 0:
-							try:
 								Main(800, 800, 100)
-							except:
 								pygame.init()
 								menu_loop()
 					if event.key == pygame.K_ESCAPE:

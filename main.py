@@ -1,6 +1,6 @@
 import sys, random, pygame
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
-from spaceship import Spaceship, Bomb, Bullet, Laser
+from spaceship import Spaceship
 from background2 import Background
 from keyboard_event_controller import keyboard_event_controller
 
@@ -25,9 +25,6 @@ class Screen(object):
 
         self.stars = Background.generate_stars(self, stars, width, height)
         self.spaceship = Spaceship()
-
-        self.projectiles = []
-        self.lasers = []
 
         self.main()
 
@@ -62,12 +59,12 @@ class Screen(object):
             self.screen.blit(self.background, (0, 0))
             self.spaceship.move(keyboard_events)
             self.spaceship.draw(self.screen)
-            self.spaceship.shoot(keyboard_events, self.projectiles)
+            self.spaceship.shoot(keyboard_events)
 
-            for projectile in self.projectiles:
+            for projectile in self.spaceship.projectiles:
                 projectile.update()
                 projectile.draw(self.screen)
-            for laser in self.lasers:
+            for laser in self.spaceship.lasers:
                 laser.draw(self.screen)
 
             pygame.display.update()

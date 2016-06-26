@@ -11,6 +11,8 @@ class Spaceship(object):
         self.image = self.spaceship_image_normal
         self.rate_of_fire = 10
         self.last_bullet_ticks = self.rate_of_fire
+        self.projectiles = []
+        self.lasers = []
 
     def draw(self, screen):
         screen.blit(self.image, [self.x, self.y])
@@ -29,10 +31,10 @@ class Spaceship(object):
         if direction == [False, False, False, False]:
             self.image = self.spaceship_image_normal
 
-    def shoot(self, keyboard_events, projectiles):
+    def shoot(self, keyboard_events):
         if keyboard_events[4]:
             if self.last_bullet_ticks >= self.rate_of_fire:
-                projectiles.append(Bullet(self.x, self.y))
+                self.projectiles.append(Bullet(self.x, self.y))
                 self.last_bullet_ticks = 0
             else:
                 self.last_bullet_ticks += 1
